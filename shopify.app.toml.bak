@@ -2,8 +2,8 @@
 
 client_id = "d95daa22eaff9e2aa603a6dfe72ade6f"
 name = "webgpu-3d-viewer"
-handle = "webgpu-3d-viewer-1"
-application_url = "<SHOPIFY_APP_URL>"
+handle = "webgpu-3d-viewer"
+application_url = "https://quit-assistant-gravity-jennifer.trycloudflare.com"
 embedded = true
 
 [build]
@@ -16,17 +16,13 @@ scopes = ""
 
 [auth]
 redirect_urls = [
-  "<SHOPIFY_APP_URL>/auth/callback",
-  "<SHOPIFY_APP_URL>/auth/shopify/callback",
-  "<SHOPIFY_APP_URL>/api/auth/callback"
+  "https://quit-assistant-gravity-jennifer.trycloudflare.com/auth/callback",
+  "https://quit-assistant-gravity-jennifer.trycloudflare.com/auth/shopify/callback",
+  "https://quit-assistant-gravity-jennifer.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
 api_version = "2024-10"
-
-  [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  uri = "/webhooks/app/uninstalled"
 
 [pos]
 embedded = false

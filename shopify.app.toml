@@ -1,0 +1,32 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "d95daa22eaff9e2aa603a6dfe72ade6f"
+name = "webgpu-3d-viewer"
+handle = "webgpu-3d-viewer-1"
+application_url = "https://vitamins-good-archived-shopzilla.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "webgpu.myshopify.com"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = ""
+
+[auth]
+redirect_urls = [
+  "https://vitamins-good-archived-shopzilla.trycloudflare.com/auth/callback",
+  "https://vitamins-good-archived-shopzilla.trycloudflare.com/auth/shopify/callback",
+  "https://vitamins-good-archived-shopzilla.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-10"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+[pos]
+embedded = false

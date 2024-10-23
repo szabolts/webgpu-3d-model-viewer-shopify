@@ -7,10 +7,10 @@ pipeline {
     options {
         timestamps()
     }
-    environment { 
-		DOCKER_IMAGE = 'shopify-webgpu'
-        CONTAINER_NAME = 'shopify-webgpu-container'
-	}
+    // environment { 
+	// 	DOCKER_IMAGE = 'shopify-webgpu'
+    //     CONTAINER_NAME = 'shopify-webgpu-container'
+	// }
 	triggers {
 		pollSCM '*/5 * * * *'
 	}

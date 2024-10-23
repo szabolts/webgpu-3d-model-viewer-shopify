@@ -53,7 +53,7 @@ pipeline {
                     sh "docker rm ${CONTAINER_NAME} || true"
                     
                     // Run the new container
-                    sh "docker run -d --name ${CONTAINER_NAME} -p 3420:3000 --restart on-failure ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                    sh "docker run -d --name ${CONTAINER_NAME} -p 3420:3000 ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
                 }
             }
         }

@@ -10,7 +10,6 @@ pipeline {
     environment { 
 		DOCKER_IMAGE = 'shopify-webgpu'
         CONTAINER_NAME = 'shopify-webgpu-container'
-        ENV_FILE_PATH = '/home/prod/shopify-webgpu/environment_variables/.env'
 	}
 	triggers {
 		pollSCM '*/5 * * * *'

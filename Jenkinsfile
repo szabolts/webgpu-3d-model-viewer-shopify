@@ -7,10 +7,11 @@ pipeline {
     options {
         timestamps()
     }
-    // environment { 
-	// 	DOCKER_IMAGE = 'shopify-webgpu'
-    //     CONTAINER_NAME = 'shopify-webgpu-container'
-	// }
+    environment { 
+		DOCKER_IMAGE = 'shopify-webgpu'
+        CONTAINER_NAME = 'shopify-webgpu-container'
+        ENV_FILE_PATH = '/home/prod/shopify-webgpu/environment_variables/.env'
+	}
 	triggers {
 		pollSCM '*/5 * * * *'
 	}
@@ -53,7 +54,7 @@ pipeline {
                     sh "docker rm ${CONTAINER_NAME} || true"
                     
                     // Run the new container
-                    sh "docker run -d --name ${CONTAINER_NAME} -p 3420:3000 ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                    sh "docker run -d --name ${CONTAINER_NAME} -p 3420:3000 -v /home/prod/shopify-webgpu/environmet_variables/.env:/app/.env ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
                 }
             }
         }

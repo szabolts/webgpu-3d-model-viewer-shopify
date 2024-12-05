@@ -1,32 +1,29 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "d95daa22eaff9e2aa603a6dfe72ade6f"
-name = "webgpu-3d-viewer"
-handle = "webgpu-3d-viewer-1"
-application_url = "<SHOPIFY_APP_URL>"
+application_url = "https://wv-suspension-encyclopedia-foul.trycloudflare.com"
 embedded = true
+name = "3D Model Viewer"
+handle = "webgpu-3d-viewer-1"
 
 [build]
 automatically_update_urls_on_dev = true
 dev_store_url = "webgpu.myshopify.com"
-
-[access_scopes]
-# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = ""
-
-[auth]
-redirect_urls = [
-  "<SHOPIFY_APP_URL>/auth/callback",
-  "<SHOPIFY_APP_URL>/auth/shopify/callback",
-  "<SHOPIFY_APP_URL>/api/auth/callback"
-]
+include_config_on_deploy = true
 
 [webhooks]
 api_version = "2024-10"
 
-  [[webhooks.subscriptions]]
-  topics = [ "app/uninstalled" ]
-  uri = "/webhooks/app/uninstalled"
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "read_products,write_products,read_product_listings"
+
+[auth]
+redirect_urls = [
+  "https://wv-suspension-encyclopedia-foul.trycloudflare.com/auth/callback",
+  "https://wv-suspension-encyclopedia-foul.trycloudflare.com/auth/shopify/callback",
+  "https://wv-suspension-encyclopedia-foul.trycloudflare.com/api/auth/callback"
+]
 
 [pos]
 embedded = false

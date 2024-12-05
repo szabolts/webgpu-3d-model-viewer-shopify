@@ -7,20 +7,84 @@ import {
   Layout,
   Text,
   Card,
-  Button,
-  BlockStack,
-  Box,
-  List,
-  Link,
-  InlineStack,
+  ResourceList,
+  ResourceItem,
+  Thumbnail
 } from "@shopify/polaris";
 import { TitleBar, useAppBridge } from "@shopify/app-bridge-react";
 import { authenticate } from "../shopify.server";
+import { useLoaderData } from "@remix-run/react";
+import ThreeJSViewer from "./components/threejs-viewer";
+
+interface Product {
+  id: string;
+  title: string;
+  description: string;
+  media: {
+    edges: Array<{
+      node: {
+        __typename: string;
+        image?: {
+          originalSrc: string;
+          altText: string;
+        };
+        sources?: Array<{
+          url: string;
+          format: string;
+        }>;
+      };
+    }>;
+  };
+}
+
+interface LoaderData {
+  products: Product[];
+}
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { admin } = await authenticate.admin(request);
 
-  return null;
+  const response = await admin.graphql(`
+    {
+      products(first: 25) {
+        edges {
+          node {
+            id
+            title
+            description
+            media(first: 10) {
+              edges {
+                node {
+                  ... on MediaImage {
+                    id
+                    image {
+                      originalSrc
+                      altText
+                    }
+                  }
+                  ... on Model3d {
+                    id
+                    sources {
+                      url
+                      format
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }`);
+
+  const responseJson = await response.json();
+  console.log("Responz: ", responseJson); // Írd ki a válaszadatokat a konzolra
+
+  const {
+    data: { products },
+  } = responseJson;
+
+  return json({ products: products.edges.map((edge: any) => edge.node) });
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -111,71 +175,81 @@ export default function Index() {
   }, [productId, shopify]);
   const generateProduct = () => fetcher.submit({}, { method: "POST" });
 
+  const { products } = useLoaderData<LoaderData>();
+
+  useEffect(() => {
+    console.log("Responz: ", products); // Írd ki a termékadatokat a konzolra
+  }, [products]);
+
+  const threeDTestProduct = products.find(product => product.title === "3D test");
+  const threeDTestProductGLB = threeDTestProduct?.media.edges
+    .filter(edge => edge.node.__typename === "Model3d")
+    .flatMap(edge => edge.node.sources)
+    .find(source => source.format === "glb");
+
+  console.log("threeDTestProductGLB:", threeDTestProductGLB); // Írd ki a threeDTestProductGLB értékét a konzolra
+
   return (
     <Page>
       <TitleBar title="WebGPU 3D Viewer">
-        <button variant="primary" /*onClick={generateProduct}*/>
+        <button variant="primary">
           Click me
         </button>
       </TitleBar>
-      <BlockStack gap="500">
-        <Layout>
-          <Layout.Section>
-            <Card>
-              <BlockStack gap="500">
-                <BlockStack gap="200">
-                  <Text as="h2" variant="headingMd">
-                    Demo App Helllo
-                  </Text>
-                  
-                </BlockStack>
-                
-                
-              </BlockStack>
-            </Card>
-          </Layout.Section>
-          <Layout.Section variant="oneThird">
-            <BlockStack gap="500">
-              <Card>
-              <BlockStack gap="200">
-                  <Text as="h2" variant="headingMd">
-                    List
-                  </Text>
-                  <List>
-                    <List.Item>
-                      List item 1 
-                    </List.Item>
-                    <List.Item>
-                    List item 1
-                    </List.Item>
-                    <List.Item>
-                    List item 1
-                    </List.Item>
-                    <List.Item>
-                    List item 1
-                    </List.Item>
-                  </List>
-                </BlockStack>
-              </Card>
-              <Card>
-                <BlockStack gap="200">
-                  <Text as="h2" variant="headingMd">
-                    Lorem ipsun
-                  </Text>
-                  <List>
-                    <List.Item>
-                      Lorem ipsun 
-                    </List.Item>
-                    <List.Item>
-                      Valami
-                    </List.Item>
-                  </List>
-                </BlockStack>
-              </Card>
-            </BlockStack>
-          </Layout.Section>
-        </Layout>
-      </BlockStack>
+      <Layout>
+      <Layout.Section>
+          <Card title="3D Test Product">
+            <ThreeJSViewer modelUrl={"https://cdn.shopify.com/3d/models/o/a8dff314a2d4d45c/2103.glb"} />
+          </Card>
+        </Layout.Section>
+        <Layout.Section>
+          <Card>
+            <Text as="h2" variant="headingMd">
+              Products
+            </Text>
+            <ResourceList
+              resourceName={{ singular: 'product', plural: 'products' }}
+              items={products}
+              renderItem={(product) => {
+                const { id, title, description, media } = product;
+                const mediaImage = media.edges.find(edge => edge.node.__typename === "MediaImage");
+                const media3d = media.edges.find(edge => edge.node.__typename === "Model3d");
+
+                return (
+                  <ResourceItem
+                    id={id}
+                    media={
+                      mediaImage ? (
+                        <Thumbnail
+                          source={mediaImage.node.image!.originalSrc}
+                          alt={mediaImage.node.image!.altText}
+                        />
+                      ) : (
+                        <Thumbnail
+                          source="https://via.placeholder.com/100"
+                          alt="No image available"
+                        />
+                      )
+                    }
+                    accessibilityLabel={`View details for ${title}`}
+                  >
+                    <h3>
+                      <Text variant="headingSm">{title}</Text>
+                    </h3>
+                    <div>{description}</div>
+                    {media3d && (
+                      <a href={media3d.node.sources![0].url} target="_blank" rel="noopener noreferrer">
+                        View 3D Model
+                      </a>
+                    )}
+                  </ResourceItem>
+                );
+              }}
+            />
+          </Card>
+        </Layout.Section>
+        
+      </Layout>
     </Page>
   );
 }

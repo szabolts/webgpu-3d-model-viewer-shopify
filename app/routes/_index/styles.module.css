@@ -71,3 +71,9 @@
     padding-bottom: 1rem;
   }
 }
+
+.stats-position {
+  position: absolute;
+  top: -30px;
+  right: 0;
+}
